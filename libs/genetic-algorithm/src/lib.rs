@@ -188,28 +188,43 @@ mod tests {
     use std::collections::BTreeMap;
     use std::iter::FromIterator;
 
-    #[derive(Clone, Debug)]
-    struct TestIndividual {
-        fitness: f32,
+    #[derive(Clone, Debug, PartialEq)]
+    enum TestIndividual {
+        WithChromosome { chromosome: Chromosome },
+        WithFitness { fitness: f32 },
+    }
+
+    impl PartialEq for Chromosome {
+        fn eq(&self, other: &Self) -> bool {
+            approx::relative_eq!(self.genes.as_slice(), other.genes.as_slice())
+        }
     }
 
     impl TestIndividual {
         fn new(fitness: f32) -> Self {
-            Self { fitness }
+            Self::WithFitness { fitness }
         }
     }
 
     impl Individual for TestIndividual {
-        fn create(_chromosome: Chromosome) -> Self {
-            todo!()
+        fn create(chromosome: Chromosome) -> Self {
+            Self::WithChromosome { chromosome }
         }
 
         fn fitness(&self) -> f32 {
-            self.fitness
+            match self {
+                Self::WithChromosome { chromosome } => chromosome.iter().sum(),
+                Self::WithFitness { fitness } => *fitness,
+            }
         }
 
         fn chromosome(&self) -> &Chromosome {
-            panic!("not supported for TestIndividual")
+            match self {
+                Self::WithChromosome { chromosome } => chromosome,
+                Self::WithFitness { .. } => {
+                    panic!("not supported for TestIndividual::WithFitness")
+                }
+            }
         }
     }
 
@@ -360,5 +375,40 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn genetic_algorithm() {
+        fn individual(genes: &[f32]) -> TestIndividual {
+            TestIndividual::create(genes.iter().cloned().collect())
+        }
+
+        let mut rng = ChaCha8Rng::from_seed(Default::default());
+
+        let ga = GeneticAlgorithm::new(
+            RouletteWheelSelection,
+            UniformCrossover,
+            GaussianMutation::new(0.5, 0.5),
+        );
+
+        let mut population = vec![
+            individual(&[0.0, 0.0, 0.0]),
+            individual(&[1.0, 1.0, 1.0]),
+            individual(&[1.0, 2.0, 1.0]),
+            individual(&[1.0, 2.0, 4.0]),
+        ];
+
+        for _ in 0..10 {
+            population = ga.evolve(&mut rng, &population);
+        }
+
+        let expected_population = vec![
+            individual(&[0.4476949, 2.0648358, 4.3058133]),
+            individual(&[1.2126867, 1.5538777, 2.886911]),
+            individual(&[1.0617678, 2.265739, 4.428764]),
+            individual(&[0.95909685, 2.4618788, 4.024733]),
+        ];
+
+        assert_eq!(population, expected_population);
     }
 }
