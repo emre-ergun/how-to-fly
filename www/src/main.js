@@ -42,11 +42,23 @@ viewport.style.height = viewportHeight + 'px';
 const ctxt = viewport.getContext('2d');
 ctxt.scale(viewportScale, viewportScale);
 
-for (const animal of simulation.world().animals) {
-  ctxt.drawTriangle(
-    animal.x * viewportWidth,
-    animal.y * viewportHeight,
-    0.01 * viewportWidth,
-    animal.rotation
-  );
+function redraw() {
+  ctxt.clearRect(0, 0, viewportWidth, viewportHeight);
+  simulation.step();
+
+  for (const animal of simulation.world().animals) {
+    ctxt.drawTriangle(
+      animal.x * viewportWidth,
+      animal.y * viewportHeight,
+      0.01 * viewportWidth,
+      animal.rotation
+    );
+  }
+  // requestAnimationFrame() schedules code only for the next frame.
+  //
+  // Because we want for our simulation to continue forever, we've
+  // gotta keep re-scheduling our function:
+  requestAnimationFrame(redraw);
 }
+
+redraw();
