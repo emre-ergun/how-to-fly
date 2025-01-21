@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables)]
+
 use lib_simulation as sim;
 use rand::prelude::*;
 use wasm_bindgen::prelude::*;
@@ -35,6 +37,7 @@ pub struct World {
 pub struct Animal {
     pub x: f32,
     pub y: f32,
+    pub rotation: f32,
 }
 
 impl From<&sim::World> for World {
@@ -50,6 +53,7 @@ impl From<&sim::Animal> for Animal {
         Self {
             x: animal.position().x,
             y: animal.position().y,
+            rotation: animal.rotation().angle(),
         }
     }
 }
