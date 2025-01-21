@@ -1,5 +1,12 @@
 import * as sim from 'lib-simulation-wasm';
 
+CanvasRenderingContext2D.prototype.drawCircle = function (x, y, radius) {
+  this.beginPath();
+  this.arc(x, y, radius, 0, 2 * Math.PI);
+  this.fillStyle = 'rgb(0,255,128)';
+  this.fill();
+};
+
 CanvasRenderingContext2D.prototype.drawTriangle = function (
   x,
   y,
@@ -25,6 +32,9 @@ CanvasRenderingContext2D.prototype.drawTriangle = function (
     y + Math.cos(rotation) * size * 1.5
   );
   this.stroke();
+
+  this.fillStyle = 'rgb(255,255,255)';
+  this.fill();
 };
 
 const simulation = new sim.Simulation();
@@ -45,6 +55,16 @@ ctxt.scale(viewportScale, viewportScale);
 function redraw() {
   ctxt.clearRect(0, 0, viewportWidth, viewportHeight);
   simulation.step();
+
+  const world = simulation.world();
+
+  for (const food of world.foods) {
+    ctxt.drawCircle(
+      food.x * viewportWidth,
+      food.y * viewportHeight,
+      (0.01 / 2.0) * viewportWidth
+    );
+  }
 
   for (const animal of simulation.world().animals) {
     ctxt.drawTriangle(

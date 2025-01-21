@@ -25,7 +25,7 @@ impl Simulation {
     }
 
     pub fn step(&mut self) {
-        self.sim.step();
+        self.sim.step(&mut self.rng);
     }
 }
 
@@ -34,6 +34,9 @@ impl Simulation {
 pub struct World {
     #[wasm_bindgen(getter_with_clone)]
     pub animals: Vec<Animal>,
+
+    #[wasm_bindgen(getter_with_clone)]
+    pub foods: Vec<Food>,
 }
 
 #[wasm_bindgen]
@@ -47,8 +50,9 @@ pub struct Animal {
 impl From<&sim::World> for World {
     fn from(world: &sim::World) -> Self {
         let animals = world.animals().iter().map(Animal::from).collect();
+        let foods = world.foods().iter().map(Food::from).collect();
 
-        Self { animals }
+        Self { animals, foods }
     }
 }
 
@@ -58,6 +62,22 @@ impl From<&sim::Animal> for Animal {
             x: animal.position().x,
             y: animal.position().y,
             rotation: animal.rotation().angle(),
+        }
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Clone, Debug)]
+pub struct Food {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl From<&sim::Food> for Food {
+    fn from(food: &sim::Food) -> Self {
+        Self {
+            x: food.position().x,
+            y: food.position().y,
         }
     }
 }
