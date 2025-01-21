@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables)]
+
 use nalgebra as na;
 use rand::{Rng, RngCore};
 
