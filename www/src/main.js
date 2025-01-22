@@ -39,6 +39,9 @@ CanvasRenderingContext2D.prototype.drawTriangle = function (
 
 const simulation = new sim.Simulation();
 const viewport = document.getElementById('viewport');
+document.getElementById('train').onclick = function () {
+  console.log(simulation.train());
+};
 
 const viewportWidth = viewport.width;
 const viewportHeight = viewport.height;
