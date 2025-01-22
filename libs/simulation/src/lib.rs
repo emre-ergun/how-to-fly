@@ -1,10 +1,11 @@
 #![allow(dead_code, unused_variables)]
 
 mod animal;
+mod eye;
 mod food;
 mod world;
 
-pub use self::{animal::*, food::*, world::*};
+pub use self::{animal::*, eye::*, food::*, world::*};
 use nalgebra as na;
 use rand::{Rng, RngCore};
 
