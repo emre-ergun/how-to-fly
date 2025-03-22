@@ -1,3 +1,6 @@
+# resolver 2 is default in Rust editions after 2021
+# might be commented out
+# note: commenting out of resolver is causing error.
 [workspace]
 resolver = "2"
 

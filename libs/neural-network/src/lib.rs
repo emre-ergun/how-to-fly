@@ -1,5 +1,6 @@
 use rand::{Rng, RngCore};
 use std::iter::once;
+
 #[derive(Debug)]
 pub struct LayerTopology {
     pub neurons: usize,
