@@ -5,6 +5,6 @@ import topLevelAwait from "vite-plugin-top-level-await";
 export default defineConfig({
   plugins: [wasm(), topLevelAwait()],
   server: {
-    port: 3000,
+    port: 3001,
   },
 });
